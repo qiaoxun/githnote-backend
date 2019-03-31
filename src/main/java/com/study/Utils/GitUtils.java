@@ -3,7 +3,6 @@ package com.study.Utils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
-import org.eclipse.jgit.lib.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +14,8 @@ public class GitUtils {
     private static Logger logger = LoggerFactory.getLogger("com.study.Utils.GitUtils");
 
     private static final String allChangedFilesPattern = ".";
+
+    private Git git;
 
     /**
      * get a git instance from the path of repository
@@ -36,33 +37,25 @@ public class GitUtils {
         return Git.open(repositoryFile);
     }
 
-    /**
-     * add file
-     * @param repository
-     * @param relativePath
-     */
-    public static void addFile(Repository repository, String relativePath) throws GitAPIException {
+    public GitUtils(String repositoryPath) {
         try {
-            Git git = new Git(repository);
-            git.add().addFilepattern(relativePath).call();
-        } catch (NoFilepatternException e) {
-            logger.error("NoFilepatternException", e);
-            throw e;
-        } catch (GitAPIException e) {
-            logger.error("GitAPIException", e);
-            throw e;
+            this.git = getGit(new File(repositoryPath));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
+    public GitUtils(Git git) {
+        this.git = git;
+    }
 
     /**
      * add file
-     * @param git
      * @param relativePath
      */
-    public static void addFile(Git git, String relativePath) throws GitAPIException{
+    public GitUtils addFile(String relativePath) throws GitAPIException{
         try {
-            git.add().addFilepattern(relativePath).call();
+            this.git.add().addFilepattern(relativePath).call();
         } catch (NoFilepatternException e) {
             logger.error("NoFilepatternException", e);
             throw e;
@@ -70,62 +63,73 @@ public class GitUtils {
             logger.error("GitAPIException", e);
             throw e;
         }
+        return this;
     }
 
     /**
      * add all changed files
-     * @param git
      * @throws GitAPIException
      */
-    public static void addAllChangedFiles(Git git) throws GitAPIException {
-        addFile(git, allChangedFilesPattern);
+    public GitUtils addAllChangedFiles() throws GitAPIException {
+        addFile(allChangedFilesPattern);
+        return this;
     }
 
 
     /**
      * commit changes
-     * @param git
      * @param message
      * @throws GitAPIException
      */
-    public static void commit(Git git, String message) throws GitAPIException {
+    public GitUtils commit(String message) throws GitAPIException {
         try {
-            git.commit().setMessage(message).call();
+            this.git.commit().setMessage(message).call();
         } catch (GitAPIException e) {
             logger.error("GitAPIException", e);
             throw e;
         }
+        return this;
     }
 
     /**
      * add file and then commit
-     * @param git
      * @param relativePath
      * @param message
      * @throws GitAPIException
      */
-    public static void addAndCommit(Git git, String relativePath, String message) throws GitAPIException {
-        addFile(git, relativePath);
-        commit(git, message);
+    public GitUtils addAndCommit(String relativePath, String message) throws GitAPIException {
+        addFile(relativePath);
+        commit(message);
+        return this;
     }
 
     /**
      * add all changed files and then commit
-     * @param git
      * @param message
      * @throws GitAPIException
      */
-    public static void addAllChangedFilesAndCommit(Git git, String message) throws GitAPIException {
-        addAllChangedFiles(git);
-        commit(git, message);
+    public GitUtils addAllChangedFilesAndCommit(String message) throws GitAPIException {
+        addAllChangedFiles();
+        commit(message);
+        return this;
     }
 
     /**
      * push to remote repository
-     * @param git
      * @throws GitAPIException
      */
-    public static void push(Git git) throws GitAPIException {
-        git.push().call();
+    public GitUtils push() throws GitAPIException {
+        this.git.push().call();
+        return this;
+    }
+
+    /**
+     * pull from remote repository
+     * @return
+     * @throws GitAPIException
+     */
+    public GitUtils pull() throws GitAPIException {
+        this.git.pull().call();
+        return this;
     }
 }

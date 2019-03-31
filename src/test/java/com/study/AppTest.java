@@ -119,7 +119,7 @@ public class AppTest
             e.printStackTrace();
         }
         System.out.println("Ref of refs/heads/master: " + head);
-        GitUtils.addFile(repository, "aaa.txt");
+       // GitUtils.addFile(repository, "aaa.txt");
     }
 
     @Test
@@ -130,16 +130,15 @@ public class AppTest
         } catch (IOException e) {
             e.printStackTrace();
         }
-        GitUtils.addFile(git, "aaaa.txt");
+        GitUtils gitUtils = new GitUtils(git);
+        gitUtils.addFile("aaa.txt");
     }
 
     @Test
     public void commitFiles() {
         try {
-            Git git = GitUtils.getGit("C:\\Users\\qiaox.CORPDOM\\Desktop\\jGitTest\\vue_generate_form2");
-            GitUtils.commit(git, "commit test");
-        } catch (IOException e) {
-            e.printStackTrace();
+            GitUtils gitUtils = new GitUtils("C:\\Users\\qiaox.CORPDOM\\Desktop\\jGitTest\\vue_generate_form2");
+            gitUtils.commit("commit test");
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
@@ -147,9 +146,9 @@ public class AppTest
 
     @Test
     public void addAndCommit() throws IOException {
-        Git git = GitUtils.getGit("C:\\Users\\qiaox.CORPDOM\\Desktop\\jGitTest\\vue_generate_form2");
+        GitUtils gitUtils = new GitUtils("C:\\Users\\qiaox.CORPDOM\\Desktop\\jGitTest\\vue_generate_form2");
         try {
-            GitUtils.addAndCommit(git, "bbb.txt", "add and commit test");
+            gitUtils.addAndCommit("bbb.txt", "add and commit test");
         } catch (GitAPIException e) {
             e.printStackTrace();
         }
@@ -157,9 +156,9 @@ public class AppTest
 
     @Test
     public void addAllAndCommit() throws IOException, GitAPIException {
-        Git git = GitUtils.getGit("C:\\study\\gitnote\\githnote-backend");
-        GitUtils.addAllChangedFilesAndCommit(git, "add some methods");
-        GitUtils.push(git);
-        git.close();
+        GitUtils gitUtils = new GitUtils("C:\\study\\gitnote\\githnote-backend");
+//        gitUtils.addAllChangedFilesAndCommit("add some methods")
+//                .push();
+        gitUtils.addFile(".").commit("this is a test").push();
     }
 }
